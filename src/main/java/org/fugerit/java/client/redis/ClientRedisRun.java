@@ -8,42 +8,38 @@ import org.fugerit.java.core.lang.helpers.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
-
-public class ClientRedisRun {
+public class ClientRedisRun extends ClientRedisArgs {
 
 	private static final Logger logger = LoggerFactory.getLogger( ClientRedisRun.class );
-	
-	public static final String ARG_MODE = "mode";
-	public static final String MODE_TEST = "test";
-	public static final String MODE_GUI = "gui";
-	public static final String MODE_DEFAULT = MODE_TEST;
-	
-	public static final String ARG_REDIS_URL = "redis-url";
-	public static final String ARG_TEST_KEY = "test-key";
-	
+		
 	public static void main( String[] args ) {
 		try {
 			Properties params = ArgUtils.getArgs( args );
 			String mode = params.getProperty( ARG_MODE, MODE_DEFAULT );
-			if ( MODE_TEST.equalsIgnoreCase( mode ) ) {
+			if ( MODE_SINGLE_COMMAND.equalsIgnoreCase( mode ) ) {
 				String redisUrl = params.getProperty( ARG_REDIS_URL );
-				String testKey = params.getProperty( ARG_TEST_KEY );
-				if ( StringUtils.isEmpty( redisUrl ) || StringUtils.isEmpty( redisUrl ) ) {
-					throw new ConfigException( "In mode '"+mode+"' the following params are required : "+ARG_REDIS_URL+" , "+ARG_TEST_KEY );
+				String ttl = params.getProperty( ARG_TTL, ClientRedisHelper.TTL_UNDEFINED.toString() );
+				String key = params.getProperty( ARG_KEY );
+				String value = params.getProperty( ARG_VALUE );
+				logger.info( "redis client  params -> redis-url:{}, ttl:{}", redisUrl, ttl );
+				logger.info( "redis command params -> key:{}, value:{}", key, value );
+				if ( StringUtils.isEmpty( redisUrl ) || StringUtils.isEmpty( key ) ) {
+					throw new ConfigException( "In mode '"+mode+"' the following params are required : "+ARG_REDIS_URL+" , "+ARG_KEY );
 				} else {
-					try ( RedisClient redisClient = RedisClient.create( RedisURI.create( redisUrl ) );
-							StatefulRedisConnection<String, String> connection = redisClient.connect() ) {
-						 RedisCommands<String, String> commands = connection.sync();            
-					     String value = commands.get( testKey );   
-					     logger.info( " ************************************************************************************************" );
-					     logger.info( " * value for key {} : {} *", testKey, value );
-					     logger.info( " ************************************************************************************************" );
-					     logger.info( " * CONNECTION SUCCESSFUL !!!                                                                    *" );
-					     logger.info( " ************************************************************************************************" );
+					try ( ClientRedisHelper client = ClientRedisHelper.newHelper(redisUrl, Long.valueOf( ttl ) ) ) {
+						logger.info( " ************************************************************************************************" );
+						if ( StringUtils.isNotEmpty( value ) ) {
+							logger.info( " * SET MODE key:{} value:{}", key, value );
+							client.set(key, value);
+						} else {
+							logger.info( " * GET MODE key:{}", key );
+							value = client.get(key);
+						}
+						logger.info( " ************************************************************************************************" );
+						logger.info( " * value for key {} : {} *", key, value );
+					    logger.info( " ************************************************************************************************" );
+					    logger.info( " * CONNECTION SUCCESSFUL !!!                                                                    *" );
+					    logger.info( " ************************************************************************************************" );
 					}
 				}
 			} else {
