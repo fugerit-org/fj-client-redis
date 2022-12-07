@@ -3,7 +3,7 @@
 See [CHANGELOG](CHANGELOG.md)
 
 *Status*  
-Currently support only connection test  
+Currently support only a single set or get operation at command line
 
 *Requirement*
 * JDK 11+ (tested with oracle jdk 11.0.16.1)
