@@ -2,6 +2,7 @@ package org.fugerit.java.client.redis;
 
 import java.util.Properties;
 
+import org.fugerit.java.client.redis.gui.ClientRedisGUI;
 import org.fugerit.java.core.cfg.ConfigException;
 import org.fugerit.java.core.cli.ArgUtils;
 import org.fugerit.java.core.lang.helpers.StringUtils;
@@ -16,7 +17,9 @@ public class ClientRedisRun extends ClientRedisArgs {
 		try {
 			Properties params = ArgUtils.getArgs( args );
 			String mode = params.getProperty( ARG_MODE, MODE_DEFAULT );
-			if ( MODE_SINGLE_COMMAND.equalsIgnoreCase( mode ) ) {
+			if ( MODE_GUI.equalsIgnoreCase( mode ) ) {
+				new ClientRedisGUI( params );
+			} else if ( MODE_SINGLE_COMMAND.equalsIgnoreCase( mode ) ) {
 				String redisUrl = params.getProperty( ARG_REDIS_URL );
 				String ttl = params.getProperty( ARG_TTL, ClientRedisHelper.TTL_UNDEFINED.toString() );
 				String key = params.getProperty( ARG_KEY );
