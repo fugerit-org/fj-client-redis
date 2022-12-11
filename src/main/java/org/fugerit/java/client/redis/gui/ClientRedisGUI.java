@@ -9,6 +9,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.sql.Timestamp;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -19,14 +21,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.fugerit.java.client.redis.ClientRedisArgs;
+import org.fugerit.java.client.redis.ClientRedisException;
+import org.fugerit.java.client.redis.ClientRedisHelper;
 import org.fugerit.java.core.lang.helpers.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 
 public class ClientRedisGUI extends JFrame implements WindowListener, ActionListener {
 
@@ -39,16 +38,21 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7032775848800955092L;
+	private static final long serialVersionUID = 10544453453L;
 
 	private JTextArea outputArea;
 	private JTextArea urlArea;
-	private JTextArea dbArea;
-	private JTextArea collectionArea;
-	private JTextArea queryArea;
+	private JTextArea keyArea;
+	private JTextArea valueArea;
+	private JTextArea ttlArea;
 
-	private JButton queryButton;
+	private JButton getButton;
+	private JButton setButton;
+	private JButton listKeysButton;
+	private JButton listAllButton;
 
+	private ClientRedisHelper helper = null;
+	
 	public ClientRedisGUI(Properties params) {
 		super("MongoDB Client");
 
@@ -60,26 +64,37 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		JScrollPane outputScroll = new JScrollPane(this.outputArea);
 
 		JPanel controlPanel = (JPanel) setUI( new JPanel(new GridLayout( 4, 2, 2, 2 )) );
-		this.urlArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_REDIS_URL, "URL"));
-		this.dbArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_REDIS_URL, "URL"));
-		this.collectionArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_REDIS_URL, "URL"));
-		this.queryArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_REDIS_URL, "URL"));
+		this.urlArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_REDIS_URL, "... redis url ..."));
+		this.keyArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_KEY, "") );
+		this.valueArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_VALUE, "") );
+		this.ttlArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_TTL, "") );
 		controlPanel.add( setUI( new JLabel("URL:", JLabel.RIGHT ) ) );
 		controlPanel.add( setUI( this.urlArea ) );
-		controlPanel.add( setUI(  new JLabel("DB:", JLabel.RIGHT ) ) );
-		controlPanel.add( setUI( this.dbArea ) );
-		controlPanel.add( setUI( new JLabel("Collection:", JLabel.RIGHT) ) );
-		controlPanel.add( setUI( this.collectionArea ) );
-		controlPanel.add( setUI( new JLabel("Query:", JLabel.RIGHT) ) );
-		controlPanel.add( setUI( this.queryArea ) );
+		controlPanel.add( setUI(  new JLabel("key:", JLabel.RIGHT ) ) );
+		controlPanel.add( setUI( this.keyArea ) );
+		controlPanel.add( setUI( new JLabel("value:", JLabel.RIGHT) ) );
+		controlPanel.add( setUI( this.valueArea ) );
+		controlPanel.add( setUI( new JLabel("ttl(s):", JLabel.RIGHT) ) );
+		controlPanel.add( setUI( this.ttlArea ) );
 
-		this.queryButton = new JButton("Esegui");
+		JPanel actionPanel = (JPanel) setUI( new JPanel(new GridLayout( 1, 4, 0, 0 )) );
+		this.getButton = new JButton( "Get" );
+		this.setButton = new JButton( "Set" );
+		this.listKeysButton = new JButton( "List keys" );
+		this.listAllButton = new JButton( "List values" );
+		actionPanel.add( this.setUI( this.getButton ) );
+		actionPanel.add( this.setUI( this.setButton ) );
+		actionPanel.add( this.setUI( this.listKeysButton ) );
+		actionPanel.add( this.setUI( this.listAllButton ) );
 
-		this.add( this.setUI( this.queryButton ), BorderLayout.SOUTH );
-		this.add(controlPanel, BorderLayout.NORTH);
+		this.add( this.setUI( actionPanel ), BorderLayout.SOUTH );
+		this.add( controlPanel, BorderLayout.NORTH);
 		this.add( outputScroll, BorderLayout.CENTER);
 
-		this.queryButton.addActionListener(this);
+		this.getButton.addActionListener(this);
+		this.setButton.addActionListener(this);
+		this.listKeysButton.addActionListener(this);
+		this.listAllButton.addActionListener(this);
 		this.addWindowListener(this);
 
 		this.setResizable(true);
@@ -96,42 +111,124 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		this.outputLine(line);
 	}
 
-	private void eseguiQuery() {
-		this.resetOutput("Execute query...");
-		try {
-			String mongourl = this.urlArea.getText();
-			String dbName = this.dbArea.getText();
-			String collectionName = this.collectionArea.getText();
-			String query = this.queryArea.getText();
-			if (StringUtils.isEmpty(mongourl) 
-					|| StringUtils.isEmpty(dbName) 
-					|| StringUtils.isEmpty(collectionName)
-					|| StringUtils.isEmpty(query)) {
-				this.outputLine("Some parameters missing...");
-			} else {
-				RedisClient redisClient = RedisClient.create( RedisURI.create(mongourl) ) ;
-				StatefulRedisConnection<String, String> connection = redisClient.connect();
-		            RedisCommands<String, String> commands = connection.sync();            
-		            String value = commands.get( query );   
-		            System.out.println("Read value : "+value);
-		            connection.close();
-		            redisClient.shutdown();
-		            this.outputLine("Result : " + value);
+	private void handleError( String baseMessage, Exception e ) {
+		String message = baseMessage+" : "+e;
+		logger.error( message, e );
+		this.outputLine( message );
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		e.printStackTrace(ps);
+		this.outputLine(new String(baos.toByteArray()));
+	}
+	
+	private ClientRedisHelper getHelper() {
+		String redisUrl = this.urlArea.getText();
+		if ( this.helper == null || !this.helper.getRedisUrl().equals( redisUrl ) ) {
+			try {
+				this.helper = ClientRedisHelper.newHelper(redisUrl);
+			} catch (ClientRedisException e) {
+				this.helper = null;
+				this.handleError( "Error creating redis client" , e);
 			}
+		}
+		return this.helper;
+	}
 
+	private void executeStart( JButton button ) {
+		this.resetOutput("Execute "+button.getText()+" : " );
+	}
+	
+	private void set() {
+		this.executeStart( this.setButton );
+		String key = this.keyArea.getText();
+		String value = this.valueArea.getText();
+		try {
+			if ( StringUtils.isEmpty( key ) || StringUtils.isEmpty( value ) ) {
+				this.outputLine("Required parameters : key, value");
+			} else {
+				ClientRedisHelper client = this.getHelper();
+				if ( client != null ) {
+					String ttl = this.ttlArea.getText();
+					if ( StringUtils.isNotEmpty( ttl ) ) {
+						long time = Long.valueOf( ttl );
+						client.set(key, value, time);
+						this.outputLine("Value for key '"+key+"' has been set to '"+value+"' and ttl="+time+"(s)");	
+					} else {
+						client.set(key, value);
+						this.outputLine("Value for key '"+key+"' has been set to '"+value+"'");
+					}
+				}
+			}
 		} catch (Exception e) {
-			logger.error("Errore : " + e, e);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			PrintStream ps = new PrintStream(baos);
-			e.printStackTrace(ps);
-			this.outputLine(new String(baos.toByteArray()));
+			this.handleError( "Error getting value for key="+key , e);
+		}
+	}
+	
+	private void get() {
+		this.executeStart( this.getButton );
+		String key = this.keyArea.getText();
+		try {
+			if ( StringUtils.isEmpty( key ) ) {
+				this.outputLine("Missing parameter : key");
+			} else {
+				ClientRedisHelper client = this.getHelper();
+				if ( client != null ) {
+					String value = client.get( key );
+					if ( value == null ) {
+						this.outputLine("Key '"+key+"' not found");	
+					} else {
+						this.outputLine("Value for key '"+key+"' is '"+value+"'");
+						long expireTime = client.getExpireTime(key);
+						if ( expireTime != -1 ) {
+							this.outputLine("Expire time for key '"+key+"' is '"+ new Timestamp( expireTime*1000L )+"'");	
+						}
+					}
+					
+				}
+			}
+		} catch (Exception e) {
+			this.handleError( "Error getting value for key="+key , e);
 		}
 	}
 
+	private void listKeys() {
+		this.executeStart( this.listKeysButton );
+		try {
+			ClientRedisHelper client = this.getHelper();
+			if ( client != null ) {
+				for ( String key : client.listKeys() ) {
+					this.outputLine(key);
+				}
+			}
+		} catch (Exception e) {
+			this.handleError( "Error getting key list" , e);
+		}
+	}
+
+	private void listAll() {
+		this.executeStart( this.listKeysButton );
+		try {
+			ClientRedisHelper client = this.getHelper();
+			if ( client != null ) {
+				for ( Entry<String, String> entry : client.all() ) {
+					this.outputLine( entry.getKey()+" : '"+entry.getValue()+"'" );
+				}
+			}
+		} catch (Exception e) {
+			this.handleError( "Error getting key list" , e);
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == this.queryButton) {
-			this.eseguiQuery();
+		if (e.getSource() == this.getButton) {
+			this.get();
+		} else if (e.getSource() == this.setButton) {
+			this.set();
+		} else if (e.getSource() == this.listKeysButton) {
+			this.listKeys();
+		} else if (e.getSource() == this.listAllButton) {
+			this.listAll();			
 		}
 	}
 
@@ -143,6 +240,13 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 	public void windowClosed(WindowEvent e) {
 		if (e.getSource() == this) {
 			this.setVisible(false);
+			if ( this.helper != null ) {
+				try {
+					this.helper.close();
+				} catch (ClientRedisException ex) {
+					logger.warn( "Error closing redis client : "+ex, ex );
+				}
+			}
 			System.exit(0);
 		}
 	}
