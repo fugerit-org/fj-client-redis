@@ -90,11 +90,11 @@ public class ClientRedisHelper implements AutoCloseable {
 		return value;
 	}
 	
-	public Long getExpireTime( String key) throws ClientRedisException {
+	public Long getTTL( String key) throws ClientRedisException {
 		Long time = null;
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
 			RedisCommands<String, String> commands = connection.sync();
-			time = commands.expiretime( key );
+			time = commands.ttl( key );
 		}
 		return time;
 	}

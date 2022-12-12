@@ -9,7 +9,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.sql.Timestamp;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -29,6 +28,8 @@ import org.slf4j.LoggerFactory;
 
 public class ClientRedisGUI extends JFrame implements WindowListener, ActionListener {
 
+	public static final String VERSION = "0.1.2";
+	
 	private final static Logger logger = LoggerFactory.getLogger(ClientRedisGUI.class);
 
 	private Component setUI( Component c ) {
@@ -54,7 +55,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 	private ClientRedisHelper helper = null;
 	
 	public ClientRedisGUI(Properties params) {
-		super("MongoDB Client");
+		super("REDIS Client "+VERSION);
 
 		// crea layout
 		BorderLayout mainLayout = new BorderLayout();
@@ -177,11 +178,14 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 					if ( value == null ) {
 						this.outputLine("Key '"+key+"' not found");	
 					} else {
-						this.outputLine("Value for key '"+key+"' is '"+value+"'");
-						long expireTime = client.getExpireTime(key);
-						if ( expireTime != -1 ) {
-							this.outputLine("Expire time for key '"+key+"' is '"+ new Timestamp( expireTime*1000L )+"'");	
+						String line = "Value for key '"+key+"' is '"+value+"'";
+						long ttl = client.getTTL(key);
+						if ( ttl >= 0 ) {
+							line+= ", ttl="+(ttl)+"(s)";
+						} else if ( ttl == -1 ) {
+							line+= ", with no expiration";
 						}
+						this.outputLine( line );
 					}
 					
 				}
