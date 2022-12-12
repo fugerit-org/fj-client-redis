@@ -90,6 +90,15 @@ public class ClientRedisHelper implements AutoCloseable {
 		return value;
 	}
 	
+	public long del( String key ) throws ClientRedisException {
+		long value = 0;
+		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
+			RedisCommands<String, String> commands = connection.sync();
+			value = commands.del( key );
+		}
+		return value;
+	}
+	
 	public Long getTTL( String key) throws ClientRedisException {
 		Long time = null;
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {

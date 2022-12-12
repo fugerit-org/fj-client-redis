@@ -16,4 +16,7 @@ Currently support only a single set or get operation at command line or a simple
 * gui : `java -jar target/dist-fj-client-redis-${VERSION}.jar --redis-url ${REDIS-URL} --mode gui`
 
 *Running redis*   
-The client had been tested running redis on [docker](https://hub.docker.com/_/redis) : `sudo docker run -p 6379:6379 --name FUGERIT -d redis:7.0.5 redis-server --save 60 1 --loglevel warning` 
+The client had been tested running redis on [docker](https://hub.docker.com/_/redis).
+* example of creating Redis 7 container :  `sudo docker run -p 6379:6379 --name REDIS7 -d redis:7.0.5 redis-server --save 60 1 --loglevel warning` 
+* example of creating Redis 5 container :  `sudo docker run -p 6379:6379 --name REDIS5 -d redis:5.0.14 redis-server --save 60 1 --loglevel warning` 
+

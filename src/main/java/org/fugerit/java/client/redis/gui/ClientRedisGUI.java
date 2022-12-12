@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class ClientRedisGUI extends JFrame implements WindowListener, ActionListener {
 
-	public static final String VERSION = "0.1.2";
+	public static final String VERSION = "0.1.3";
 	
 	private final static Logger logger = LoggerFactory.getLogger(ClientRedisGUI.class);
 
@@ -49,6 +49,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 
 	private JButton getButton;
 	private JButton setButton;
+	private JButton delButton;
 	private JButton listKeysButton;
 	private JButton listAllButton;
 
@@ -78,13 +79,15 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		controlPanel.add( setUI( new JLabel("ttl(s):", JLabel.RIGHT) ) );
 		controlPanel.add( setUI( this.ttlArea ) );
 
-		JPanel actionPanel = (JPanel) setUI( new JPanel(new GridLayout( 1, 4, 0, 0 )) );
+		JPanel actionPanel = (JPanel) setUI( new JPanel(new GridLayout( 1, 5, 0, 0 )) );
 		this.getButton = new JButton( "Get" );
 		this.setButton = new JButton( "Set" );
+		this.delButton = new JButton( "Del" );
 		this.listKeysButton = new JButton( "List keys" );
 		this.listAllButton = new JButton( "List values" );
 		actionPanel.add( this.setUI( this.getButton ) );
 		actionPanel.add( this.setUI( this.setButton ) );
+		actionPanel.add( this.setUI( this.delButton ) );
 		actionPanel.add( this.setUI( this.listKeysButton ) );
 		actionPanel.add( this.setUI( this.listAllButton ) );
 
@@ -94,6 +97,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 
 		this.getButton.addActionListener(this);
 		this.setButton.addActionListener(this);
+		this.delButton.addActionListener(this);
 		this.listKeysButton.addActionListener(this);
 		this.listAllButton.addActionListener(this);
 		this.addWindowListener(this);
@@ -194,6 +198,24 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 			this.handleError( "Error getting value for key="+key , e);
 		}
 	}
+	
+	private void del() {
+		this.executeStart( this.delButton );
+		String key = this.keyArea.getText();
+		try {
+			if ( StringUtils.isEmpty( key ) ) {
+				this.outputLine("Missing parameter : key");
+			} else {
+				ClientRedisHelper client = this.getHelper();
+				if ( client != null ) {
+					long value = client.del( key );
+					this.outputLine("Key '"+key+"' del result : "+value );	
+				}
+			}
+		} catch (Exception e) {
+			this.handleError( "Error getting value for key="+key , e);
+		}
+	}
 
 	private void listKeys() {
 		this.executeStart( this.listKeysButton );
@@ -229,6 +251,8 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 			this.get();
 		} else if (e.getSource() == this.setButton) {
 			this.set();
+		} else if (e.getSource() == this.delButton) {
+			this.del();
 		} else if (e.getSource() == this.listKeysButton) {
 			this.listKeys();
 		} else if (e.getSource() == this.listAllButton) {
