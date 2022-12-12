@@ -10,7 +10,6 @@
       <AppenderRef ref="Console"/>
     </Root>
     <Logger name="org.fugerit.java" level="INFO">
-		<AppenderRef ref="LogToConsole"/>
     </Logger>
   </Loggers>
 </Configuration>
