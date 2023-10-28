@@ -2,6 +2,8 @@ package org.fugerit.java.client.redis;
 
 public class ClientRedisArgs {
 
+	private ClientRedisArgs() {}
+	
 	public static final String ARG_MODE = "mode";
 	public static final String MODE_SINGLE_COMMAND = "single-command";
 	public static final String MODE_GUI = "gui";

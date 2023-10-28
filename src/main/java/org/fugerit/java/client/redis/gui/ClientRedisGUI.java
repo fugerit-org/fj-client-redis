@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 import org.fugerit.java.client.redis.ClientRedisArgs;
 import org.fugerit.java.client.redis.ClientRedisException;
@@ -30,8 +31,14 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 
 	public static final String VERSION = "0.2.0";
 	
-	private final static Logger logger = LoggerFactory.getLogger(ClientRedisGUI.class);
+	private static final Logger logger = LoggerFactory.getLogger(ClientRedisGUI.class);
 
+	private static final String VALUE_FOR_KEY_LIT = "Value for key '";
+	
+	private static final String HAS_BEEN_SET_TO_LIT = "' has been set to '";
+	
+	private static final String ERROR_GETTING_VALUE_FOR_JEY_LIT = "Error getting value for key=";
+	
 	private Component setUI( Component c ) {
 		return c;
 	}
@@ -53,7 +60,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 	private JButton listKeysButton;
 	private JButton listAllButton;
 
-	private ClientRedisHelper helper = null;
+	private transient ClientRedisHelper helper = null;
 	
 	public ClientRedisGUI(Properties params) {
 		super("REDIS Client "+VERSION);
@@ -70,13 +77,13 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		this.keyArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_KEY, "") );
 		this.valueArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_VALUE, "") );
 		this.ttlArea = new JTextArea(params.getProperty(ClientRedisArgs.ARG_TTL, "") );
-		controlPanel.add( setUI( new JLabel("URL:", JLabel.RIGHT ) ) );
+		controlPanel.add( setUI( new JLabel("URL:", SwingConstants.RIGHT ) ) );
 		controlPanel.add( setUI( this.urlArea ) );
-		controlPanel.add( setUI(  new JLabel("key:", JLabel.RIGHT ) ) );
+		controlPanel.add( setUI(  new JLabel("key:", SwingConstants.RIGHT ) ) );
 		controlPanel.add( setUI( this.keyArea ) );
-		controlPanel.add( setUI( new JLabel("value:", JLabel.RIGHT) ) );
+		controlPanel.add( setUI( new JLabel("value:", SwingConstants.RIGHT) ) );
 		controlPanel.add( setUI( this.valueArea ) );
-		controlPanel.add( setUI( new JLabel("ttl(s):", JLabel.RIGHT) ) );
+		controlPanel.add( setUI( new JLabel("ttl(s):", SwingConstants.RIGHT) ) );
 		controlPanel.add( setUI( this.ttlArea ) );
 
 		JPanel actionPanel = (JPanel) setUI( new JPanel(new GridLayout( 1, 5, 0, 0 )) );
@@ -155,17 +162,17 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 				if ( client != null ) {
 					String ttl = this.ttlArea.getText();
 					if ( StringUtils.isNotEmpty( ttl ) ) {
-						long time = Long.valueOf( ttl );
+						long time = Long.parseLong( ttl );
 						client.set(key, value, time);
-						this.outputLine("Value for key '"+key+"' has been set to '"+value+"' and ttl="+time+"(s)");	
+						this.outputLine(VALUE_FOR_KEY_LIT+key+HAS_BEEN_SET_TO_LIT+value+"' and ttl="+time+"(s)");	
 					} else {
 						client.set(key, value);
-						this.outputLine("Value for key '"+key+"' has been set to '"+value+"'");
+						this.outputLine(VALUE_FOR_KEY_LIT+key+HAS_BEEN_SET_TO_LIT+value+"'");
 					}
 				}
 			}
 		} catch (Exception e) {
-			this.handleError( "Error getting value for key="+key , e);
+			this.handleError( ERROR_GETTING_VALUE_FOR_JEY_LIT+key , e);
 		}
 	}
 	
@@ -182,7 +189,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 					if ( value == null ) {
 						this.outputLine("Key '"+key+"' not found");	
 					} else {
-						String line = "Value for key '"+key+"' is '"+value+"'";
+						String line = VALUE_FOR_KEY_LIT+key+"' is '"+value+"'";
 						long ttl = client.getTTL(key);
 						if ( ttl >= 0 ) {
 							line+= ", ttl="+(ttl)+"(s)";
@@ -195,7 +202,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 				}
 			}
 		} catch (Exception e) {
-			this.handleError( "Error getting value for key="+key , e);
+			this.handleError( ERROR_GETTING_VALUE_FOR_JEY_LIT+key , e);
 		}
 	}
 	
@@ -213,7 +220,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 				}
 			}
 		} catch (Exception e) {
-			this.handleError( "Error getting value for key="+key , e);
+			this.handleError( ERROR_GETTING_VALUE_FOR_JEY_LIT+key , e);
 		}
 	}
 
@@ -262,6 +269,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 
 	@Override
 	public void windowActivated(WindowEvent e) {
+		// this method is not needed in this implementation
 	}
 
 	@Override
@@ -286,18 +294,22 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 
 	@Override
 	public void windowDeactivated(WindowEvent e) {
+		// this method is not needed in this implementation
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent e) {
+		// this method is not needed in this implementation
 	}
 
 	@Override
 	public void windowIconified(WindowEvent e) {
+		// this method is not needed in this implementation
 	}
 
 	@Override
 	public void windowOpened(WindowEvent e) {
+		// this method is not needed in this implementation
 	}
 
 }
