@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class ClientRedisGUI extends JFrame implements WindowListener, ActionListener {
 
-	public static final String VERSION = "0.1.3";
+	public static final String VERSION = "0.2.0";
 	
 	private final static Logger logger = LoggerFactory.getLogger(ClientRedisGUI.class);
 

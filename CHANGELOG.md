@@ -1,16 +1,48 @@
-# Changelog for project fj-client-redis
+# Changelog
 
-## version 0.1.3 - 2022-12-12
-* Correction to log
-* Added del operation to gui
+All notable changes to this project will be documented in this file.
 
-## version 0.1.2 - 2022-12-12
-* TTL retrieve is no compatible with REDIS 5
-* Expiration time in get operation has been replaced by TTL.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## version 0.1.1 - 2022-12-11
-* Added simple GUI
-* Changed log configuration
+## [Unreleased]
 
-## version 0.1.0 - 2022-12-07
-* Support for set / get of a single key at command line
+## [0.2.0] - 2023-10-28
+
+### Changed
+
+- changelog in keepachangelog style
+- parent pom is no fj-unverse-tool
+
+## [0.1.3] - 2022-12-12
+
+### Added
+
+- del operation to gui
+
+### Fixed
+
+- Correction to log
+
+## [0.1.2] - 2022-12-12
+
+### Changed
+
+- TTL retrieve is no compatible with REDIS 5
+- Expiration time in get operation has been replaced by TTL.
+
+## [0.1.1] - 2022-12-11
+
+### Added
+
+- Added simple GUI
+
+## Changed
+
+- Changed log configuration
+
+## [0.1.0] - 2022-12-07
+
+### Added
+
+- Support for set / get of a single key at command line
