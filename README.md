@@ -5,7 +5,6 @@
 [![license](https://img.shields.io/badge/License-Apache%20License%202.0-teal.svg)](https://opensource.org/licenses/Apache-2.0)
 [![code of conduct](https://img.shields.io/badge/conduct-Contributor%20Covenant-purple.svg)](https://github.com/fugerit-org/fj-universe/blob/main/CODE_OF_CONDUCT.md)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=fugerit-org_fj-client-redis&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=fugerit-org_fj-client-redis)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=fugerit-org_fj-client-redis&metric=coverage)](https://sonarcloud.io/summary/new_code?id=fugerit-org_fj-client-redis)
 
 [![Java runtime version](https://img.shields.io/badge/run%20on-java%2011+-%23113366.svg?style=for-the-badge&logo=openjdk&logoColor=white)](https://universe.fugerit.org/src/docs/versions/java11.html)
 [![Java build version](https://img.shields.io/badge/build%20on-java%2011+-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)](https://universe.fugerit.org/src/docs/versions/java11.html)
