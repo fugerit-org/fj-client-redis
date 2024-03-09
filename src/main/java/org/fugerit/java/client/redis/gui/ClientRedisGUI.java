@@ -21,7 +21,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import org.fugerit.java.client.redis.ClientRedisArgs;
-import org.fugerit.java.client.redis.ClientRedisException;
 import org.fugerit.java.client.redis.ClientRedisHelper;
 import org.fugerit.java.core.lang.helpers.StringUtils;
 import org.slf4j.Logger;
@@ -138,7 +137,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		if ( this.helper == null || !this.helper.getRedisUrl().equals( redisUrl ) ) {
 			try {
 				this.helper = ClientRedisHelper.newHelper(redisUrl);
-			} catch (ClientRedisException e) {
+			} catch (Exception e) {
 				this.helper = null;
 				this.handleError( "Error creating redis client" , e);
 			}
@@ -279,7 +278,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 			if ( this.helper != null ) {
 				try {
 					this.helper.close();
-				} catch (ClientRedisException ex) {
+				} catch (Exception ex) {
 					logger.warn( "Error closing redis client : "+ex, ex );
 				}
 			}

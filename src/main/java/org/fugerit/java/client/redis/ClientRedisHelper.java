@@ -23,14 +23,14 @@ public class ClientRedisHelper implements AutoCloseable {
 	
 	private Long timeToLive;
 	
-	private ClientRedisHelper( String redisUrl, Long timeToLive ) throws ClientRedisException {
+	private ClientRedisHelper( String redisUrl, Long timeToLive ) {
 		this.redisUrl = redisUrl;
 		this.redisClient = RedisClient.create( RedisURI.create( redisUrl ) );
 		this.timeToLive = ObjectUtils.objectWithDefault( timeToLive, TTL_UNDEFINED );
 	}
 	
 	@Override
-	public void close() throws ClientRedisException {
+	public void close() {
 		this.redisUrl = null;
 		this.timeToLive = null;
 		this.redisClient.shutdown();
@@ -44,7 +44,7 @@ public class ClientRedisHelper implements AutoCloseable {
 		return timeToLive;
 	}
 
-	public List<String> listKeys() throws ClientRedisException {
+	public List<String> listKeys() {
 		List<String> list;
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
 			RedisCommands<String, String> commands = connection.sync();
@@ -54,7 +54,7 @@ public class ClientRedisHelper implements AutoCloseable {
 		return list;
 	}
 	
-	public List<Entry<String, String>> all() throws ClientRedisException {
+	public List<Entry<String, String>> all() {
 		List<Entry<String, String>> list = new ArrayList<>();
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
 			RedisCommands<String, String> commands = connection.sync();
@@ -66,11 +66,11 @@ public class ClientRedisHelper implements AutoCloseable {
 		return list;
 	}
 	
-	public void set( String key, String value ) throws ClientRedisException {
+	public void set( String key, String value )  {
 		this.set(key, value, this.timeToLive);
 	}
 	
-	public void set( String key, String value, Long ttl ) throws ClientRedisException {
+	public void set( String key, String value, Long ttl )  {
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
 			RedisCommands<String, String> commands = connection.sync();			
 			if ( ttl != null && ttl != TTL_UNDEFINED ) {
@@ -81,7 +81,7 @@ public class ClientRedisHelper implements AutoCloseable {
 		}
 	}
 
-	public String get( String key) throws ClientRedisException {
+	public String get( String key)  {
 		String value = null;
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
 			RedisCommands<String, String> commands = connection.sync();
@@ -90,7 +90,7 @@ public class ClientRedisHelper implements AutoCloseable {
 		return value;
 	}
 	
-	public long del( String key ) throws ClientRedisException {
+	public long del( String key )  {
 		long value = 0;
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
 			RedisCommands<String, String> commands = connection.sync();
@@ -99,7 +99,7 @@ public class ClientRedisHelper implements AutoCloseable {
 		return value;
 	}
 	
-	public Long getTTL( String key) throws ClientRedisException {
+	public Long getTTL( String key)  {
 		Long time = null;
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
 			RedisCommands<String, String> commands = connection.sync();
@@ -108,11 +108,11 @@ public class ClientRedisHelper implements AutoCloseable {
 		return time;
 	}
 	
-	public static ClientRedisHelper newHelper( String redisUrl, Long timeToLive ) throws ClientRedisException {
+	public static ClientRedisHelper newHelper( String redisUrl, Long timeToLive )  {
 		return new ClientRedisHelper(redisUrl, timeToLive);
 	}
 	
-	public static ClientRedisHelper newHelper( String redisUrl ) throws ClientRedisException {
+	public static ClientRedisHelper newHelper( String redisUrl )  {
 		return newHelper(redisUrl, TTL_UNDEFINED);
 	}
 	
