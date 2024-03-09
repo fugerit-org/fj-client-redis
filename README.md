@@ -13,12 +13,26 @@
 *Status*  
 Currently support only a single set or get operation at command line or a simple GUI
 
+
 ## Quickstart
 
+### Build
+
 - build :  `mvn clean install -P singlepackage`
+
+or 
+
+- build & test : `mvn clean install -P test,singlepackage`
+
+NOTE: tests needs containers environment available (through testcontainers).
+  So are disabled by default and cam be enabled adding the 'test' profile.
+
+### Run
+
 - set : `java -jar target/dist-fj-client-redis-${VERSION}.jar --redis-url ${REDIS-URL} --key ${KEY-TO-SET} --value ${VALUE-TO-SET}`
 - get : `java -jar target/dist-fj-client-redis-${VERSION}.jar --redis-url ${REDIS-URL} --key ${KEY-TO-SEARH}`
  -gui : `java -jar target/dist-fj-client-redis-${VERSION}.jar --redis-url ${REDIS-URL} --mode gui`
+
 
 ## Running redis test container
 
