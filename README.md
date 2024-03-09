@@ -36,12 +36,21 @@ NOTE: tests needs containers environment available (through testcontainers).
 
 ## Running redis test container
 
-The client had been tested running redis on [docker](https://hub.docker.com/_/redis) : 
+The client had been tested running redis on [docker hub](https://hub.docker.com/_/redis) : 
 
-- example of creating Redis 7 container :  `docker run -p 6379:6379 --name REDIS7 -d redis:7.2-alpine redis-server --save 60 1 --loglevel warning` 
-- example of creating Redis 5 container :  `docker run -p 6379:6379 --name REDIS5 -d redis:5.0.14 redis-server --save 60 1 --loglevel warning` 
+### Creating Redis 7 container :
 
-For example running the commands : 
+```
+docker run -p 6379:6379 --name REDIS7 -d redis:7.2-alpine redis-server --save 60 1 --loglevel warning
+```
+
+### Or creating Redis 5 container :  
+
+```
+docker run -p 6379:6379 --name REDIS5 -d redis:5.0-alpine redis-server --save 60 1 --loglevel warning` 
+```
+
+## Sample commands on local container : 
 
 ### test set : 
 
