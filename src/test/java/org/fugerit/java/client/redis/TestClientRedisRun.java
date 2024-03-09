@@ -35,15 +35,22 @@ class TestClientRedisRun {
     }
 
     @Test
-    void testSet() {
+    void allTest() {
         boolean ok = true;
         try {
-            String address = redis.getHost();
-            Integer port = redis.getFirstMappedPort();
-            String redisUrl = "redis://"+address+":"+port;
-            String[] args = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_KEY ), KEY_TEST_1,
+            // set
+            String[] argsSet = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_KEY ), KEY_TEST_1,
                     ArgUtils.getArgString( ClientRedisArgs.ARG_VALUE ), new Date( System.currentTimeMillis() ).toString() );
-            ClientRedisRun.main( args );
+            ClientRedisRun.main( argsSet );
+            // get
+            String[] argsGet = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_KEY ), KEY_TEST_1 );
+            ClientRedisRun.main( argsGet );
+            // list keus
+            String[] argsListKeys = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_LIST ), ClientRedisArgs.ARG_LIST_KEYS  );
+            ClientRedisRun.main( argsListKeys );
+            // list all
+            String[] argsListAll = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_LIST ), ClientRedisArgs.ARG_LIST_ALL  );
+            ClientRedisRun.main( argsListAll );
         } catch (Exception e) {
             log.warn( "Errore in unit test : "+e ,e );
             ok = false;
@@ -51,20 +58,5 @@ class TestClientRedisRun {
         Assert.assertTrue( ok );
     }
 
-    @Test
-    void testGet() {
-        boolean ok = true;
-        try {
-            String address = redis.getHost();
-            Integer port = redis.getFirstMappedPort();
-            String redisUrl = "redis://"+address+":"+port;
-            String[] args = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_KEY ), KEY_TEST_1 );
-            ClientRedisRun.main( args );
-        } catch (Exception e) {
-            log.warn( "Errore in unit test : "+e ,e );
-            ok = false;
-        }
-        Assert.assertTrue( ok );
-    }
 
 }

@@ -13,6 +13,12 @@ public class ClientRedisArgs {
 	public static final String ARG_KEY = "key";
 	public static final String ARG_VALUE = "value";
 	public static final String ARG_TTL = "ttl";
+
+	public static final String ARG_LIST = "list";
+
+	public static final String ARG_LIST_KEYS = "keys";
+
+	public static final String ARG_LIST_ALL = "all";
 	
 }
 

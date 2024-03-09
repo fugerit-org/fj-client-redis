@@ -26,23 +26,32 @@ public class ClientRedisRun {
 				String ttl = params.getProperty( ClientRedisArgs.ARG_TTL, ClientRedisHelper.TTL_UNDEFINED.toString() );
 				String key = params.getProperty( ClientRedisArgs.ARG_KEY );
 				String value = params.getProperty( ClientRedisArgs.ARG_VALUE );
+				String list = params.getProperty( ClientRedisArgs.ARG_LIST );
 				logger.info( "redis client  params -> redis-url:{}, ttl:{}", redisUrl, ttl );
 				logger.info( "redis command params -> key:{}, value:{}", key, value );
-				if ( StringUtils.isEmpty( redisUrl ) || StringUtils.isEmpty( key ) ) {
-					throw new ConfigException( "In mode '"+mode+"' the following params are required : "+ClientRedisArgs.ARG_REDIS_URL+" , "+ClientRedisArgs.ARG_KEY );
+				if ( StringUtils.isEmpty( redisUrl ) || ( StringUtils.isEmpty( key ) && StringUtils.isEmpty( list ) ) ) {
+					throw new ConfigException( "In mode '"+mode+"' the following params are required : "+ClientRedisArgs.ARG_REDIS_URL+" and ( "+ClientRedisArgs.ARG_KEY+" or "+ClientRedisArgs.ARG_LIST_ALL+" )" );
 				} else {
 					try ( ClientRedisHelper client = ClientRedisHelper.newHelper(redisUrl, Long.valueOf( ttl ) ) ) {
 						logger.info( STAR_LINE );
-						if ( StringUtils.isNotEmpty( value ) ) {
-							logger.info( " * SET MODE key:{} value:{}", key, value );
-							client.set(key, value);
+						if ( StringUtils.isNotEmpty( list ) ) {
+							if ( ClientRedisArgs.ARG_LIST_ALL.equalsIgnoreCase( list ) ) {
+								client.all().stream().forEach( e -> logger.info( " * SET MODE list all:{} current:{}", e ) );
+							} else {
+								client.listKeys().stream().forEach( k -> logger.info( " * SET MODE list keys:{} current:{}", k ) );
+							}
 						} else {
-							logger.info( " * GET MODE key:{}", key );
-							value = client.get(key);
+							if ( StringUtils.isNotEmpty( value ) ) {
+								logger.info( " * SET MODE key:{} value:{}", key, value );
+								client.set(key, value);
+							} else {
+								logger.info( " * GET MODE key:{}", key );
+								value = client.get(key);
+							}
+							logger.info( STAR_LINE );
+							logger.info( " * value for key {} : {} *", key, value );
+							logger.info( STAR_LINE);
 						}
-						logger.info( STAR_LINE );
-						logger.info( " * value for key {} : {} *", key, value );
-					    logger.info( STAR_LINE);
 					    logger.info( " * CONNECTION SUCCESSFUL !!!                                                                    *" );
 					    logger.info( STAR_LINE );
 					}

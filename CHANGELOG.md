@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- list keys and list values in command line mode
 - testcontainers and junit5 test
 
 ### Changed
