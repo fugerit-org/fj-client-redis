@@ -60,7 +60,7 @@ public class ClientRedisHelper implements AutoCloseable {
 			RedisCommands<String, String> commands = connection.sync();
 			KeyScanCursor<String> scan = commands.scan();
 			for ( String key : scan.getKeys() ) {
-				list.add( new AbstractMap.SimpleEntry<String, String>( key, this.get(key) ) );
+				list.add( new AbstractMap.SimpleEntry<>( key, this.get(key) ) );
 			}			
 		}
 		return list;
