@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- update fj-univer-tool parent to 1.0.1
+- lettuce version set to 6.3.1.RELEASE
+
+### Removed
+
+- ClientRedisException
+
 ## [0.2.0] - 2023-10-28
 
 ### Added

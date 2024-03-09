@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.fugerit.java.universe</groupId>
 		<artifactId>fj-universe-tool</artifactId>
-		<version>0.5.5</version>
+		<version>1.0.1</version>
 		<relativePath></relativePath>
 	</parent>
 
@@ -63,7 +63,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version-compliance>11</java-version-compliance>
-		<lettuce-core-version>6.2.1.RELEASE</lettuce-core-version>
+		<lettuce-core-version>6.3.1.RELEASE</lettuce-core-version>
 		<tool-main-class>org.fugerit.java.client.redis.ClientRedisRun</tool-main-class>
 	</properties>
 
