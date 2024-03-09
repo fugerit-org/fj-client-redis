@@ -21,6 +21,8 @@ class TestClientRedisRun {
 
     private final static String KEY_TEST_1 = "key-test-1";
 
+    private final static String KEY_TEST_2 = "key-test-2";
+
     @Container
     GenericContainer redis = new GenericContainer(DockerImageName.parse("redis:7.2-alpine")).withExposedPorts(6379);
 
@@ -42,6 +44,11 @@ class TestClientRedisRun {
             String[] argsSet = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_KEY ), KEY_TEST_1,
                     ArgUtils.getArgString( ClientRedisArgs.ARG_VALUE ), new Date( System.currentTimeMillis() ).toString() );
             ClientRedisRun.main( argsSet );
+            // set with ttl
+            String[] argsSetWithTtl = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_TTL ), "3600",
+                    ArgUtils.getArgString( ClientRedisArgs.ARG_KEY ), KEY_TEST_2,
+                    ArgUtils.getArgString( ClientRedisArgs.ARG_VALUE ), new Date( System.currentTimeMillis() ).toString() );
+            ClientRedisRun.main( argsSetWithTtl );
             // get
             String[] argsGet = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_KEY ), KEY_TEST_1 );
             ClientRedisRun.main( argsGet );
@@ -51,6 +58,34 @@ class TestClientRedisRun {
             // list all
             String[] argsListAll = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_LIST ), ClientRedisArgs.ARG_LIST_ALL  );
             ClientRedisRun.main( argsListAll );
+        } catch (Exception e) {
+            log.warn( "Errore in unit test : "+e ,e );
+            ok = false;
+        }
+        Assert.assertTrue( ok );
+    }
+
+    @Test
+    void testModeNotSupported() {
+        boolean ok = true;
+        try {
+            // modeUnkown
+            String[] modeUnkown = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_MODE ), "unknown" );
+            ClientRedisRun.main( modeUnkown );
+        } catch (Exception e) {
+            log.warn( "Errore in unit test : "+e ,e );
+            ok = false;
+        }
+        Assert.assertTrue( ok );
+    }
+
+    @Test
+    void testWrongConfiguration() {
+        boolean ok = true;
+        try {
+            // modeUnkown
+            String[] wrongConfiguration = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_MODE ), ClientRedisArgs.MODE_SINGLE_COMMAND );
+            ClientRedisRun.main( wrongConfiguration );
         } catch (Exception e) {
             log.warn( "Errore in unit test : "+e ,e );
             ok = false;

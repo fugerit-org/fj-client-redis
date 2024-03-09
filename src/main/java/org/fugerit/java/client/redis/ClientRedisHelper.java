@@ -73,7 +73,7 @@ public class ClientRedisHelper implements AutoCloseable {
 	public void set( String key, String value, Long ttl )  {
 		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
 			RedisCommands<String, String> commands = connection.sync();			
-			if ( ttl != null && ttl != TTL_UNDEFINED ) {
+			if ( ttl != null && !ttl.equals( TTL_UNDEFINED ) ) {
 				commands.setex( key , ttl, value ); 
 			} else {
 				commands.set( key, value );
