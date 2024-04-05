@@ -13,9 +13,6 @@
 
 [![Download latest](https://img.shields.io/badge/download-latest%20release-1188ee.svg?style=for-the-badge&logo=openjdk&logoColor=white)](https://github.com/fugerit-org/fj-client-redis/releases/download/v1.1.0/dist-fj-client-redis-1.1.0.jar)
 
-
-https://github.com/fugerit-org/fj-client-redis/releases/download/v1.1.0/dist-fj-client-redis-1.1.0.jar
-
 *Status*  
 Currently support only a single set or get operation at command line or a simple GUI
 
