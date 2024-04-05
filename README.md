@@ -19,11 +19,11 @@ Currently support only a single set or get operation at command line or a simple
 
 ### Build
 
-- build :  `mvn clean install -P singlepackage`
+`mvn clean install -P singlepackage`
 
-or 
+or build & test : 
 
-- build & test : `mvn clean install -P test,singlepackage`
+`mvn clean install -P test,singlepackage`
 
 NOTE: tests needs containers environment available (through testcontainers).
   So are disabled by default and cam be enabled adding the 'test' profile.

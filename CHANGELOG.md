@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- fj-univere-tool parent to 2.2.0
+
 ## [1.0.0] - 2024-03-09
 
 ### Added
@@ -16,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- update fj-univer-tool parent to 1.0.1
+- fj-univere-tool parent to 1.0.1
 - lettuce version set to 6.3.1.RELEASE
 
 ### Removed

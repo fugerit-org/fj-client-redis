@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.fugerit.java.universe</groupId>
 		<artifactId>fj-universe-tool</artifactId>
-		<version>1.0.1</version>
+		<version>2.2.0</version>
 		<relativePath></relativePath>
 	</parent>
 
@@ -64,10 +64,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version-compliance>11</java-version-compliance>
 		<lettuce-core-version>6.3.1.RELEASE</lettuce-core-version>
-		<testcontainers-version>1.19.7</testcontainers-version>
-		<junit-jupiter-version>5.10.2</junit-jupiter-version>
-		<testcontainers-core-version>${testcontainers-version}</testcontainers-core-version>
-		<testcontainers-junit-version>${testcontainers-version}</testcontainers-junit-version>
 		<tool-main-class>org.fugerit.java.client.redis.ClientRedisRun</tool-main-class>
 	</properties>
 
@@ -83,19 +79,16 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>${junit-jupiter-version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
-			<version>${testcontainers-core-version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>${testcontainers-junit-version}</version>
 			<scope>test</scope>
 		</dependency>
 
