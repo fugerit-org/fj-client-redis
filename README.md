@@ -30,10 +30,23 @@ NOTE: tests needs containers environment available (through testcontainers).
 
 ### Run
 
-- set : `java -jar target/dist-fj-client-redis-${VERSION}.jar --redis-url ${REDIS-URL} --key ${KEY-TO-SET} --value ${VALUE-TO-SET}`
-- get : `java -jar target/dist-fj-client-redis-${VERSION}.jar --redis-url ${REDIS-URL} --key ${KEY-TO-SEARH}`
- -gui : `java -jar target/dist-fj-client-redis-${VERSION}.jar --redis-url ${REDIS-URL} --mode gui`
+-gui :
 
+```shell
+java -jar target/dist-fj-client-redis-*.jar --redis-url ${REDIS-URL} --mode gui
+```
+
+- set : 
+
+```shell
+java -jar target/dist-fj-client-redis-*.jar --redis-url ${REDIS-URL} --key ${KEY-TO-SET} --value ${VALUE-TO-SET}
+```
+
+- get :
+
+```shell
+java -jar target/dist-fj-client-redis-*.jar --redis-url ${REDIS-URL} --key ${KEY-TO-SEARH}
+```
 
 ## Running redis test container
 
@@ -41,32 +54,34 @@ The client had been tested running redis on [docker hub](https://hub.docker.com/
 
 ### Creating Redis 7 container :
 
-```
-docker run -p 6379:6379 --name REDIS7 -d redis:7.2-alpine redis-server --save 60 1 --loglevel warning
+```shell
+docker run -it --rm -p 6379:6379 --name REDIS7 -d redis:7.2-alpine redis-server --save 60 1 --loglevel warning
 ```
 
 ### Or creating Redis 5 container :  
 
-```
-docker run -p 6379:6379 --name REDIS5 -d redis:5.0-alpine redis-server --save 60 1 --loglevel warning` 
+```shell
+docker run -it --rm -p 6379:6379 --name REDIS5 -d redis:5.0-alpine redis-server --save 60 1 --loglevel warning` 
 ```
 
 ## Sample commands on local container : 
 
+### test gui :
+
+```shell
+java -jar target/dist-fj-client-redis-*.jar --redis-url redis://localhost --mode gui
+```
+
 ### test set : 
 
-```
+```shell
 java -jar target/dist-fj-client-redis-*.jar --redis-url redis://localhost --key test-key-1 --value test-value-1
 ```
 
 ### test get :
 
-```
+```shell
 java -jar target/dist-fj-client-redis-*.jar --redis-url redis://localhost --key test-key-1
 ```
 
-### test gui :
 
-```
-java -jar target/dist-fj-client-redis-*.jar --redis-url redis://localhost --mode gui
-```
