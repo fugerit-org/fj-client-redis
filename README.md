@@ -11,9 +11,13 @@
 [![Java build version](https://img.shields.io/badge/build%20on-java%2011+-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)](https://universe.fugerit.org/src/docs/versions/java11.html)
 [![Apache Maven](https://img.shields.io/badge/Apache%20Maven-3.9.0+-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white)](https://universe.fugerit.org/src/docs/versions/maven3_9.html)
 
+[![Download latest](https://img.shields.io/badge/download-latest%20release-1188ee.svg?style=for-the-badge&logo=openjdk&logoColor=white)](https://github.com/fugerit-org/fj-client-redis/releases/download/v1.1.0/dist-fj-client-redis-1.1.0.jar)
+
+
+https://github.com/fugerit-org/fj-client-redis/releases/download/v1.1.0/dist-fj-client-redis-1.1.0.jar
+
 *Status*  
 Currently support only a single set or get operation at command line or a simple GUI
-
 
 ## Quickstart
 
