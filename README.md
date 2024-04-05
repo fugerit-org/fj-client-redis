@@ -30,7 +30,7 @@ NOTE: tests needs containers environment available (through testcontainers).
 
 ### Run
 
--gui :
+- gui :
 
 ```shell
 java -jar target/dist-fj-client-redis-*.jar --redis-url ${REDIS-URL} --mode gui
