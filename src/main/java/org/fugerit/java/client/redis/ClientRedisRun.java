@@ -1,13 +1,14 @@
 package org.fugerit.java.client.redis;
 
-import java.util.Properties;
-
 import org.fugerit.java.client.redis.gui.ClientRedisGUI;
 import org.fugerit.java.core.cfg.ConfigException;
 import org.fugerit.java.core.cli.ArgUtils;
 import org.fugerit.java.core.lang.helpers.StringUtils;
+import org.fugerit.java.tool.util.MainHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Properties;
 
 public class ClientRedisRun {
 
@@ -24,7 +25,7 @@ public class ClientRedisRun {
 		logger.info( "redis client  params -> redis-url:{}, ttl:{}", redisUrl, ttl );
 		logger.info( "redis command params -> key:{}, value:{}", key, value );
 		if ( StringUtils.isEmpty( redisUrl ) || ( StringUtils.isEmpty( key ) && StringUtils.isEmpty( list ) ) ) {
-			throw new ConfigException( "In mode '"+mode+"' the following params are required : "+ClientRedisArgs.ARG_REDIS_URL+" and ( "+ClientRedisArgs.ARG_KEY+" or "+ClientRedisArgs.ARG_LIST_ALL+" )" );
+			throw new ConfigException( "In mode '"+mode+"' the following params are required : "+ClientRedisArgs.ARG_REDIS_URL+" and ( "+ClientRedisArgs.ARG_KEY+" or "+ClientRedisArgs.ARG_LIST_ALL+" )", MainHelper.FAIL_MISSING_REQUIRED_PARAM );
 		} else {
 			try ( ClientRedisHelper client = ClientRedisHelper.newHelper(redisUrl, Long.valueOf( ttl ) ) ) {
 				logger.info( STAR_LINE );
@@ -53,7 +54,7 @@ public class ClientRedisRun {
 	}
 
 	public static void main( String[] args ) {
-		try {
+		MainHelper.handleMain( () -> {
 			Properties params = ArgUtils.getArgs( args );
 			String mode = params.getProperty( ClientRedisArgs.ARG_MODE, ClientRedisArgs.MODE_DEFAULT );
 			if ( ClientRedisArgs.MODE_GUI.equalsIgnoreCase( mode ) ) {
@@ -61,11 +62,9 @@ public class ClientRedisRun {
 			} else if ( ClientRedisArgs.MODE_SINGLE_COMMAND.equalsIgnoreCase( mode ) ) {
 				handleSingleCommand( params, mode );
 			} else {
-				logger.warn( "{} not supported {}", ClientRedisArgs.ARG_MODE, mode );
+				throw new ConfigException( String.format( "Mode not supported %s", mode ), MainHelper.FAIL_MISSING_REQUIRED_PARAM );
 			}
-		} catch (Exception e) {
-			logger.info( "Error : "+e, e );
-		}
+		} );
 	}
 	
 }
