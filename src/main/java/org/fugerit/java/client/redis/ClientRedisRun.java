@@ -1,5 +1,6 @@
 package org.fugerit.java.client.redis;
 
+import com.sun.tools.javac.Main;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.fugerit.java.client.redis.gui.ClientRedisGUI;
 import org.fugerit.java.core.cfg.ConfigException;
@@ -67,7 +68,7 @@ public class ClientRedisRun {
 			} else {
 				throw new ConfigException( String.format( "Mode not supported %s", mode ), MainHelper.FAIL_MISSING_REQUIRED_PARAM );
 			}
-		} );
+		}, MainHelper.DEFAULT_ERROR_ACTION, i -> logger.info( "exit:{}", i ) );
 	}
 	
 }

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fj-univere-tool parent to 2.2.4
 - main review with MainHelper (fj-tool-util)
 
+### Fixed
+
+- startup failure of mode gui
+
 ## [1.1.0] - 2024-04-06
 
 ### Changed
