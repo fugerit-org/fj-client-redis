@@ -23,10 +23,11 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
-      - uses: fugerit-org/psychic-actions/maven-build-scan@stable
+      - uses: fugerit-org/psychic-actions/maven-build-scan@dev
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           disable-maven-dependency-submission: ${{ vars.DISABLE_MAVEN_DEPENDENCY_SUBMISSION }}
+          maven-additional-options: '-Djava.awt.headless=true'
