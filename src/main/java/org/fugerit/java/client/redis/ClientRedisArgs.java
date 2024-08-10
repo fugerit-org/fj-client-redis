@@ -19,6 +19,8 @@ public class ClientRedisArgs {
 	public static final String ARG_LIST_KEYS = "keys";
 
 	public static final String ARG_LIST_ALL = "all";
-	
+
+	public static final String ARG_INFO = "info";
+
 }
 

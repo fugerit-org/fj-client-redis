@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- server info command
+
 ### Changed
 
 - fj-univere-tool parent to 2.2.4

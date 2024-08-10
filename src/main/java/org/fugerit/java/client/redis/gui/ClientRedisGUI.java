@@ -58,6 +58,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 	private JButton delButton;
 	private JButton listKeysButton;
 	private JButton listAllButton;
+	private JButton infoButton;
 
 	private transient ClientRedisHelper helper = null;
 	
@@ -85,17 +86,19 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		controlPanel.add( setUI( new JLabel("ttl(s):", SwingConstants.RIGHT) ) );
 		controlPanel.add( setUI( this.ttlArea ) );
 
-		JPanel actionPanel = (JPanel) setUI( new JPanel(new GridLayout( 1, 5, 0, 0 )) );
+		JPanel actionPanel = (JPanel) setUI( new JPanel(new GridLayout( 1, 6, 0, 0 )) );
 		this.getButton = new JButton( "Get" );
 		this.setButton = new JButton( "Set" );
 		this.delButton = new JButton( "Del" );
 		this.listKeysButton = new JButton( "List keys" );
 		this.listAllButton = new JButton( "List values" );
+		this.infoButton = new JButton( "Server info" );
 		actionPanel.add( this.setUI( this.getButton ) );
 		actionPanel.add( this.setUI( this.setButton ) );
 		actionPanel.add( this.setUI( this.delButton ) );
 		actionPanel.add( this.setUI( this.listKeysButton ) );
 		actionPanel.add( this.setUI( this.listAllButton ) );
+		actionPanel.add( this.setUI( this.infoButton ) );
 
 		this.add( this.setUI( actionPanel ), BorderLayout.SOUTH );
 		this.add( controlPanel, BorderLayout.NORTH);
@@ -106,6 +109,7 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		this.delButton.addActionListener(this);
 		this.listKeysButton.addActionListener(this);
 		this.listAllButton.addActionListener(this);
+		this.infoButton.addActionListener( this );
 		this.addWindowListener(this);
 
 		this.setResizable(true);
@@ -250,6 +254,18 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 			this.handleError( "Error getting key list" , e);
 		}
 	}
+
+	protected void info() {
+		this.executeStart( this.infoButton );
+		try {
+			ClientRedisHelper client = this.getHelper();
+			if ( client != null ) {
+				this.outputLine( client.serverInfo() );
+			}
+		} catch (Exception e) {
+			this.handleError( "Error getting key list" , e);
+		}
+	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -263,6 +279,8 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 			this.listKeys();
 		} else if (e.getSource() == this.listAllButton) {
 			this.listAll();			
+		} else if (e.getSource() == this.infoButton) {
+			this.info();;
 		}
 	}
 

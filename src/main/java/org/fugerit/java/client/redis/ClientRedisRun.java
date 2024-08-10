@@ -22,16 +22,22 @@ public class ClientRedisRun {
 
 	private static void handleSingleCommand( Properties params, String mode ) throws ConfigException {
 		ParamHolder holder = ParamHolder.newAndHolder( ParamHolder.newHolder( ClientRedisArgs.ARG_REDIS_URL ),
-				ParamHolder.newOrHolder( ClientRedisArgs.ARG_KEY, ClientRedisArgs.ARG_LIST ) );
+				ParamHolder.newOrHolder( ClientRedisArgs.ARG_KEY, ClientRedisArgs.ARG_LIST, ClientRedisArgs.ARG_INFO ) );
 		if ( ArgHelper.checkAllRequiredThrowRuntimeEx( params, holder ) ) {
 			String redisUrl = params.getProperty( ClientRedisArgs.ARG_REDIS_URL );
 			String ttl = params.getProperty( ClientRedisArgs.ARG_TTL, ClientRedisHelper.TTL_UNDEFINED.toString() );
 			String key = params.getProperty( ClientRedisArgs.ARG_KEY );
 			String value = params.getProperty( ClientRedisArgs.ARG_VALUE );
 			String list = params.getProperty( ClientRedisArgs.ARG_LIST );
+			String info = params.getProperty( ClientRedisArgs.ARG_INFO );
+
 			logger.info( "redis client  params -> redis-url:{}, ttl:{}", redisUrl, ttl );
 			logger.info( "redis command params -> key:{}, value:{}", key, value );
 			try ( ClientRedisHelper client = ClientRedisHelper.newHelper(redisUrl, Long.valueOf( ttl ) ) ) {
+				if ( info != null ) {
+					logger.info( client.serverInfo() );
+					logger.info( STAR_LINE );
+				}
 				logger.info( STAR_LINE );
 				if ( StringUtils.isNotEmpty( list ) ) {
 					if ( ClientRedisArgs.ARG_LIST_ALL.equalsIgnoreCase( list ) ) {

@@ -1,14 +1,11 @@
 package org.fugerit.java.client.redis;
 
 
-import com.github.stefanbirkner.systemlambda.SystemLambda;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.fop.cli.Main;
-import org.fugerit.java.core.cfg.ConfigRuntimeException;
+import org.fugerit.java.client.redis.gui.ClientRedisGUI;
 import org.fugerit.java.core.cli.ArgUtils;
-import org.fugerit.java.core.function.SafeFunction;
-import org.fugerit.java.core.lang.ex.CodeException;
 import org.fugerit.java.core.lang.ex.CodeRuntimeException;
+import org.fugerit.java.core.lang.helpers.BooleanUtils;
 import org.fugerit.java.tool.util.MainHelper;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
@@ -20,11 +17,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import java.security.Permission;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.function.IntConsumer;
 
 @Testcontainers
@@ -90,6 +87,9 @@ class TestClientRedisRun {
             // list all
             String[] argsListAll = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_LIST ), ClientRedisArgs.ARG_LIST_ALL  );
             ClientRedisRun.main( argsListAll );
+            // info
+            String[] argsInfo = getParameters( ArgUtils.getArgString( ClientRedisArgs.ARG_INFO ), BooleanUtils.BOOLEAN_1);
+            ClientRedisRun.main( argsInfo );
         } catch (Exception e) {
             log.warn( "Errore in unit test : "+e ,e );
             ok = false;
@@ -114,6 +114,28 @@ class TestClientRedisRun {
         try {
             String[] wrongConfiguration = getParameters(ArgUtils.getArgString(ClientRedisArgs.ARG_MODE), ClientRedisArgs.MODE_SINGLE_COMMAND);
             ClientRedisRun.main(wrongConfiguration);
+        } catch ( CodeRuntimeException e ) {
+            log.info( "Exit code : {}", e.getCode() );
+            Assertions.assertEquals( MainHelper.FAIL_MISSING_REQUIRED_PARAM, e.getCode() );
+        }
+    }
+
+    @Test
+    void testGui() {
+        try {
+            Properties params = new Properties();
+            String address = redis.getHost();
+            Integer port = redis.getFirstMappedPort();
+            String redisUrl = "redis://"+address+":"+port;
+            params.setProperty( ClientRedisArgs.ARG_REDIS_URL, redisUrl );
+            ClientRedisGUI gui = new ClientRedisGUI( params ) {
+                @Override
+                public String toString() {
+                    this.info();
+                    return super.toString()+"[run test ok]";
+                }
+            };
+            log.info( "gui: {}", gui.toString());
         } catch ( CodeRuntimeException e ) {
             log.info( "Exit code : {}", e.getCode() );
             Assertions.assertEquals( MainHelper.FAIL_MISSING_REQUIRED_PARAM, e.getCode() );

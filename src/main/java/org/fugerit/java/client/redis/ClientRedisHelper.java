@@ -107,6 +107,13 @@ public class ClientRedisHelper implements AutoCloseable {
 		}
 		return time;
 	}
+
+	public String serverInfo()  {
+		try ( StatefulRedisConnection<String, String> connection = this.redisClient.connect() ) {
+			RedisCommands<String, String> commands = connection.sync();
+			return commands.info();
+		}
+	}
 	
 	public static ClientRedisHelper newHelper( String redisUrl, Long timeToLive )  {
 		return new ClientRedisHelper(redisUrl, timeToLive);
