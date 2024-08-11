@@ -1,8 +1,10 @@
 package org.fugerit.java.client.redis;
 
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.fugerit.java.client.redis.gui.ClientRedisGUI;
+import org.fugerit.java.client.redis.gui.ClientRedisGUIFun;
 import org.fugerit.java.core.cli.ArgUtils;
 import org.fugerit.java.core.lang.ex.CodeRuntimeException;
 import org.fugerit.java.core.lang.helpers.BooleanUtils;
@@ -28,9 +30,9 @@ import java.util.function.IntConsumer;
 @Slf4j
 class TestClientRedisRun {
 
-    private final static String KEY_TEST_1 = "key-test-1";
+    protected static final String KEY_TEST_1 = "key-test-1";
 
-    private final static String KEY_TEST_2 = "key-test-2";
+    protected static final String KEY_TEST_2 = "key-test-2";
 
     @Container
     GenericContainer redis = new GenericContainer(DockerImageName.parse("redis:7.2-alpine")).withExposedPorts(6379);
@@ -121,25 +123,56 @@ class TestClientRedisRun {
     }
 
     @Test
-    void testGui() {
+    void testGuiFun() {
         try {
-            Properties params = new Properties();
             String address = redis.getHost();
             Integer port = redis.getFirstMappedPort();
             String redisUrl = "redis://"+address+":"+port;
-            params.setProperty( ClientRedisArgs.ARG_REDIS_URL, redisUrl );
-            ClientRedisGUI gui = new ClientRedisGUI( params ) {
-                @Override
-                public String toString() {
-                    this.info();
-                    return super.toString()+"[run test ok]";
-                }
-            };
-            log.info( "gui: {}", gui.toString());
+            ClientRedisGUIFunTester fun = new ClientRedisGUIFunTester( redisUrl );
+            fun.get();  // not found
+            Assertions.assertEquals( KEY_TEST_1, fun.getKey() );
+            fun.set();
+            fun.get();  // found
+            fun.listKeys();
+            fun.listAll();
+            fun.info();
+            fun.setKey( null );
+            fun.get();  // null key
         } catch ( CodeRuntimeException e ) {
             log.info( "Exit code : {}", e.getCode() );
             Assertions.assertEquals( MainHelper.FAIL_MISSING_REQUIRED_PARAM, e.getCode() );
         }
+    }
+
+}
+
+@Slf4j
+class ClientRedisGUIFunTester extends ClientRedisGUIFun {
+
+    @Setter private String key = TestClientRedisRun.KEY_TEST_1;
+    @Setter private String value = "test-value-1";
+    @Override
+    public String getKey() {
+        return this.key;
+    }
+
+    @Override
+    public String getValue() {
+        return this.value;
+    }
+
+    @Override
+    public String getTTL() {
+        return "100";
+    }
+
+    @Override
+    public void outputLine(String line) {
+        log.info( "outputLine : {}", line );
+    }
+
+    ClientRedisGUIFunTester( String redisUrl ) {
+        super(redisUrl);
     }
 
 }

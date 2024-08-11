@@ -9,7 +9,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.swing.JButton;
@@ -21,8 +20,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import org.fugerit.java.client.redis.ClientRedisArgs;
-import org.fugerit.java.client.redis.ClientRedisHelper;
-import org.fugerit.java.core.lang.helpers.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +57,6 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 	private JButton listAllButton;
 	private JButton infoButton;
 
-	private transient ClientRedisHelper helper = null;
-	
 	public ClientRedisGUI(Properties params) {
 		super("REDIS Client "+VERSION);
 
@@ -112,6 +107,10 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		this.infoButton.addActionListener( this );
 		this.addWindowListener(this);
 
+		if ( params.containsKey( ClientRedisArgs.ARG_REDIS_URL ) ) {
+			this.urlArea.setText( params.getProperty( ClientRedisArgs.ARG_REDIS_URL ) );
+		}
+
 		this.setResizable(true);
 		this.setSize(800, 600);
 		this.setVisible(true);
@@ -136,151 +135,55 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		this.outputLine(new String(baos.toByteArray()));
 	}
 	
-	private ClientRedisHelper getHelper() {
-		String redisUrl = this.urlArea.getText();
-		if ( this.helper == null || !this.helper.getRedisUrl().equals( redisUrl ) ) {
-			try {
-				this.helper = ClientRedisHelper.newHelper(redisUrl);
-			} catch (Exception e) {
-				this.helper = null;
-				this.handleError( "Error creating redis client" , e);
+	private ClientRedisGUIFun getHelper() {
+		ClientRedisGUI gui = this;
+		return new ClientRedisGUIFun( this.urlArea.getText() ) {
+			@Override
+			public String getKey() {
+				return keyArea.getText();
 			}
-		}
-		return this.helper;
+
+			@Override
+			public String getValue() {
+				return valueArea.getText();
+			}
+
+			@Override
+			public String getTTL() {
+				return ttlArea.getText();
+			}
+
+			@Override
+			public void outputLine(String line) {
+				gui.outputLine( line );
+			}
+
+			@Override
+			public void error(String baseMessage, Exception e) {
+				gui.handleError( baseMessage, e );
+			}
+		};
 	}
 
-	private void executeStart( JButton button ) {
-		this.resetOutput("Execute "+button.getText()+" : " );
-	}
-	
-	private void set() {
-		this.executeStart( this.setButton );
-		String key = this.keyArea.getText();
-		String value = this.valueArea.getText();
-		try {
-			if ( StringUtils.isEmpty( key ) || StringUtils.isEmpty( value ) ) {
-				this.outputLine("Required parameters : key, value");
-			} else {
-				ClientRedisHelper client = this.getHelper();
-				if ( client != null ) {
-					String ttl = this.ttlArea.getText();
-					if ( StringUtils.isNotEmpty( ttl ) ) {
-						long time = Long.parseLong( ttl );
-						client.set(key, value, time);
-						this.outputLine(VALUE_FOR_KEY_LIT+key+HAS_BEEN_SET_TO_LIT+value+"' and ttl="+time+"(s)");	
-					} else {
-						client.set(key, value);
-						this.outputLine(VALUE_FOR_KEY_LIT+key+HAS_BEEN_SET_TO_LIT+value+"'");
-					}
-				}
-			}
-		} catch (Exception e) {
-			this.handleError( ERROR_GETTING_VALUE_FOR_JEY_LIT+key , e);
-		}
-	}
-	
-	private void get() {
-		this.executeStart( this.getButton );
-		String key = this.keyArea.getText();
-		try {
-			if ( StringUtils.isEmpty( key ) ) {
-				this.outputLine("Missing parameter : key");
-			} else {
-				ClientRedisHelper client = this.getHelper();
-				if ( client != null ) {
-					String value = client.get( key );
-					if ( value == null ) {
-						this.outputLine("Key '"+key+"' not found");	
-					} else {
-						String line = VALUE_FOR_KEY_LIT+key+"' is '"+value+"'";
-						long ttl = client.getTTL(key);
-						if ( ttl >= 0 ) {
-							line+= ", ttl="+(ttl)+"(s)";
-						} else if ( ttl == -1 ) {
-							line+= ", with no expiration";
-						}
-						this.outputLine( line );
-					}
-					
-				}
-			}
-		} catch (Exception e) {
-			this.handleError( ERROR_GETTING_VALUE_FOR_JEY_LIT+key , e);
-		}
-	}
-	
-	private void del() {
-		this.executeStart( this.delButton );
-		String key = this.keyArea.getText();
-		try {
-			if ( StringUtils.isEmpty( key ) ) {
-				this.outputLine("Missing parameter : key");
-			} else {
-				ClientRedisHelper client = this.getHelper();
-				if ( client != null ) {
-					long value = client.del( key );
-					this.outputLine("Key '"+key+"' del result : "+value );	
-				}
-			}
-		} catch (Exception e) {
-			this.handleError( ERROR_GETTING_VALUE_FOR_JEY_LIT+key , e);
-		}
-	}
-
-	private void listKeys() {
-		this.executeStart( this.listKeysButton );
-		try {
-			ClientRedisHelper client = this.getHelper();
-			if ( client != null ) {
-				for ( String key : client.listKeys() ) {
-					this.outputLine(key);
-				}
-			}
-		} catch (Exception e) {
-			this.handleError( "Error getting key list" , e);
-		}
-	}
-
-	private void listAll() {
-		this.executeStart( this.listKeysButton );
-		try {
-			ClientRedisHelper client = this.getHelper();
-			if ( client != null ) {
-				for ( Entry<String, String> entry : client.all() ) {
-					this.outputLine( entry.getKey()+" : '"+entry.getValue()+"'" );
-				}
-			}
-		} catch (Exception e) {
-			this.handleError( "Error getting key list" , e);
-		}
-	}
-
-	protected void info() {
-		this.executeStart( this.infoButton );
-		try {
-			ClientRedisHelper client = this.getHelper();
-			if ( client != null ) {
-				this.outputLine( client.serverInfo() );
-			}
-		} catch (Exception e) {
-			this.handleError( "Error getting key list" , e);
-		}
-	}
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if ( e.getSource() instanceof JButton ) {
+			this.resetOutput( String.format( "Running command : %s", ((JButton)e.getSource()).getText() ) );
+		}
 		if (e.getSource() == this.getButton) {
-			this.get();
+			this.getHelper().get();
 		} else if (e.getSource() == this.setButton) {
-			this.set();
+			this.getHelper().set();
 		} else if (e.getSource() == this.delButton) {
-			this.del();
+			this.getHelper().del();
 		} else if (e.getSource() == this.listKeysButton) {
-			this.listKeys();
+			this.getHelper().listKeys();
 		} else if (e.getSource() == this.listAllButton) {
-			this.listAll();			
+			this.getHelper().listAll();
 		} else if (e.getSource() == this.infoButton) {
-			this.info();;
+			this.getHelper().info();
+		} else {
+			this.resetOutput( "No command selected" );
 		}
 	}
 
@@ -293,13 +196,6 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 	public void windowClosed(WindowEvent e) {
 		if (e.getSource() == this) {
 			this.setVisible(false);
-			if ( this.helper != null ) {
-				try {
-					this.helper.close();
-				} catch (Exception ex) {
-					logger.warn( "Error closing redis client : "+ex, ex );
-				}
-			}
 			System.exit(0);
 		}
 	}

@@ -1,7 +1,5 @@
 package org.fugerit.java.client.redis;
 
-import com.sun.tools.javac.Main;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.fugerit.java.client.redis.gui.ClientRedisGUI;
 import org.fugerit.java.core.cfg.ConfigException;
 import org.fugerit.java.core.cli.ArgUtils;
@@ -20,7 +18,7 @@ public class ClientRedisRun {
 		
 	private static final String STAR_LINE = " ************************************************************************************************";
 
-	private static void handleSingleCommand( Properties params, String mode ) throws ConfigException {
+	private static void handleSingleCommand( Properties params ) {
 		ParamHolder holder = ParamHolder.newAndHolder( ParamHolder.newHolder( ClientRedisArgs.ARG_REDIS_URL ),
 				ParamHolder.newOrHolder( ClientRedisArgs.ARG_KEY, ClientRedisArgs.ARG_LIST, ClientRedisArgs.ARG_INFO ) );
 		if ( ArgHelper.checkAllRequiredThrowRuntimeEx( params, holder ) ) {
@@ -35,7 +33,8 @@ public class ClientRedisRun {
 			logger.info( "redis command params -> key:{}, value:{}", key, value );
 			try ( ClientRedisHelper client = ClientRedisHelper.newHelper(redisUrl, Long.valueOf( ttl ) ) ) {
 				if ( info != null ) {
-					logger.info( client.serverInfo() );
+					String serverInfo = client.serverInfo();
+					logger.info( "server info\n{}", serverInfo );
 					logger.info( STAR_LINE );
 				}
 				logger.info( STAR_LINE );
@@ -70,7 +69,7 @@ public class ClientRedisRun {
 			if ( ClientRedisArgs.MODE_GUI.equalsIgnoreCase( mode ) ) {
 				new ClientRedisGUI( params );
 			} else if ( ClientRedisArgs.MODE_SINGLE_COMMAND.equalsIgnoreCase( mode ) ) {
-				handleSingleCommand( params, mode );
+				handleSingleCommand( params );
 			} else {
 				throw new ConfigException( String.format( "Mode not supported %s", mode ), MainHelper.FAIL_MISSING_REQUIRED_PARAM );
 			}
