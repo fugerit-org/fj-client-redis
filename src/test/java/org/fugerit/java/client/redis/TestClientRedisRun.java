@@ -3,6 +3,7 @@ package org.fugerit.java.client.redis;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.fugerit.java.core.cfg.ConfigException;
 import org.fugerit.java.core.cli.ArgUtils;
 import org.fugerit.java.core.lang.ex.CodeRuntimeException;
 import org.fugerit.java.core.lang.helpers.BooleanUtils;
@@ -130,11 +131,15 @@ class TestClientRedisRun {
             Assertions.assertEquals( KEY_TEST_1, fun.getKey() );
             fun.set();
             fun.get();  // found
+            fun.del();
             fun.listKeys();
             fun.listAll();
             fun.info();
             fun.setKey( null );
             fun.get();  // null key
+            fun.set();
+            fun.del();
+            fun.error( "Test error", new ConfigException( "Test exception" ) );
         } catch ( CodeRuntimeException e ) {
             log.info( "Exit code : {}", e.getCode() );
             Assertions.assertEquals( MainHelper.FAIL_MISSING_REQUIRED_PARAM, e.getCode() );

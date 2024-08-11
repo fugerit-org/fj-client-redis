@@ -54,12 +54,11 @@ public abstract class ClientRedisFun {
         this.executeStart( "set" );
         String key = this.getKey();
         String value = this.getValue();
-        try {
+        SafeFunction.apply( () -> {
             if ( StringUtils.isEmpty( key ) || StringUtils.isEmpty( value ) ) {
                 this.outputLine("Required parameters : key, value");
             } else {
-                ClientRedisHelper client = this.getHelper();
-                if ( client != null ) {
+                try (ClientRedisHelper client = this.getHelper()) {
                     String ttl = this.getTTL();
                     if ( StringUtils.isNotEmpty( ttl ) ) {
                         long time = Long.parseLong( ttl );
@@ -71,11 +70,8 @@ public abstract class ClientRedisFun {
                     }
                 }
             }
-        } catch (Exception e) {
-            this.error( ERROR_GETTING_VALUE_FOR_JEY_LIT+key , e);
-        }
+        }, this.getExceptionConsumer( ERROR_GETTING_VALUE_FOR_JEY_LIT+key ) );
     }
-
 
     public void get() {
         this.executeStart( "get" );
