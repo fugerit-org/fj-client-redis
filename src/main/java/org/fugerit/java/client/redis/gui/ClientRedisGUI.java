@@ -30,12 +30,6 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 	
 	private static final Logger logger = LoggerFactory.getLogger(ClientRedisGUI.class);
 
-	private static final String VALUE_FOR_KEY_LIT = "Value for key '";
-	
-	private static final String HAS_BEEN_SET_TO_LIT = "' has been set to '";
-	
-	private static final String ERROR_GETTING_VALUE_FOR_JEY_LIT = "Error getting value for key=";
-	
 	private Component setUI( Component c ) {
 		return c;
 	}
