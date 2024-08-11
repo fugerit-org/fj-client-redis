@@ -3,8 +3,6 @@ package org.fugerit.java.client.redis;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.fugerit.java.client.redis.gui.ClientRedisGUI;
-import org.fugerit.java.client.redis.gui.ClientRedisGUIFun;
 import org.fugerit.java.core.cli.ArgUtils;
 import org.fugerit.java.core.lang.ex.CodeRuntimeException;
 import org.fugerit.java.core.lang.helpers.BooleanUtils;
@@ -23,7 +21,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.function.IntConsumer;
 
 @Testcontainers
@@ -147,7 +144,7 @@ class TestClientRedisRun {
 }
 
 @Slf4j
-class ClientRedisGUIFunTester extends ClientRedisGUIFun {
+class ClientRedisGUIFunTester extends ClientRedisFun {
 
     @Setter private String key = TestClientRedisRun.KEY_TEST_1;
     @Setter private String value = "test-value-1";

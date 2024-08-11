@@ -20,6 +20,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import org.fugerit.java.client.redis.ClientRedisArgs;
+import org.fugerit.java.client.redis.ClientRedisFun;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,9 +136,9 @@ public class ClientRedisGUI extends JFrame implements WindowListener, ActionList
 		this.outputLine(new String(baos.toByteArray()));
 	}
 	
-	private ClientRedisGUIFun getHelper() {
+	private ClientRedisFun getHelper() {
 		ClientRedisGUI gui = this;
-		return new ClientRedisGUIFun( this.urlArea.getText() ) {
+		return new ClientRedisFun( this.urlArea.getText() ) {
 			@Override
 			public String getKey() {
 				return keyArea.getText();

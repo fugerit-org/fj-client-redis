@@ -1,16 +1,17 @@
-package org.fugerit.java.client.redis.gui;
+package org.fugerit.java.client.redis;
 
 import lombok.extern.slf4j.Slf4j;
-import org.fugerit.java.client.redis.ClientRedisHelper;
 import org.fugerit.java.core.function.SafeFunction;
-import org.fugerit.java.core.function.UnsafeConsumer;
 import org.fugerit.java.core.lang.helpers.StringUtils;
 
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Redis command functions
+ */
 @Slf4j
-public abstract class ClientRedisGUIFun {
+public abstract class ClientRedisFun {
 
     private static final String VALUE_FOR_KEY_LIT = "Value for key '";
 
@@ -20,7 +21,7 @@ public abstract class ClientRedisGUIFun {
 
     private String redisUrl;
 
-    protected ClientRedisGUIFun( String redisUrl ) {
+    protected ClientRedisFun(String redisUrl ) {
         this.redisUrl = redisUrl;
     }
 
