@@ -63,7 +63,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version-compliance>11</java-version-compliance>
-		<lettuce-core-version>6.3.2.RELEASE</lettuce-core-version>
+		<lettuce-core-version>6.4.0.RELEASE</lettuce-core-version>
 		<tool-main-class>org.fugerit.java.client.redis.ClientRedisRun</tool-main-class>
 	</properties>
 
